@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>현위치 조회</title>
+<style>
+  body { font-family: "맑은 고딕", sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; margin:0; background:#f0f4ff; }
+  .box { background:white; border-radius:12px; padding:40px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.1); min-width:320px; }
+  h2 { color:#333; margin-bottom:20px; }
+  #status { color:#666; font-size:14px; margin:10px 0; }
+  #result { color:#1a73e8; font-size:18px; font-weight:bold; margin:16px 0; }
+  button { background:#1a73e8; color:white; border:none; padding:12px 28px; border-radius:8px; font-size:15px; cursor:pointer; }
+  button:hover { background:#1558b0; }
+  #done { color:green; font-weight:bold; display:none; margin-top:12px; }
+</style>
+</head>
+<body>
+<div class="box">
+  <h2>📍 현위치 조회</h2>
+  <div id="status">버튼을 눌러 위치를 가져오세요</div>
+  <div id="result"></div>
+  <button onclick="getLocation()">현재 위치 가져오기</button>
+  <div id="done">✅ Java로 전달 완료! 이 창을 닫아도 됩니다.</div>
+</div>
+
+<script>
+function getLocation() {
+  document.getElementById('status').innerText = '위치 권한을 허용해 주세요...';
+  document.getElementById('result').innerText = '';
+
+  if (!navigator.geolocation) {
+    document.getElementById('status').innerText = '❌ 이 브라우저는 Geolocation을 지원하지 않습니다.';
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    function(pos) {
+      var lat = pos.coords.latitude;
+      var lon = pos.coords.longitude;
+      var acc = pos.coords.accuracy;
+
+      document.getElementById('status').innerText = '정확도: ' + Math.round(acc) + 'm';
+      document.getElementById('result').innerText = '위도: ' + lat.toFixed(6) + '\n경도: ' + lon.toFixed(6);
+
+      // 위경도를 로컬 파일에 저장 (Java가 읽을 파일)
+      // fetch로 Java 내장 HTTP 서버에 전달
+      fetch('http://localhost:9999/location?lat=' + lat + '&lon=' + lon)
+        .then(function(res) {
+          document.getElementById('done').style.display = 'block';
+        })
+        .catch(function() {
+          // 서버 없으면 클립보드에 복사
+          var text = lat.toFixed(6) + ',' + lon.toFixed(6);
+          navigator.clipboard.writeText(text).then(function() {
+            document.getElementById('status').innerText = '📋 클립보드에 복사됨: ' + text;
+          });
+        });
+    },
+    function(err) {
+      var msg = {1:'권한 거부됨', 2:'위치를 가져올 수 없음', 3:'시간 초과'};
+      document.getElementById('status').innerText = '❌ 오류: ' + (msg[err.code] || err.message);
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+  );
+}
+</script>
+</body>
+</html>
