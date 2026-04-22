@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Telegram Control Panel</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #111111;
+      --muted: #666666;
+      --border: #dddddd;
+      --panel: #f7f7f7;
+    }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+    }
+    .wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    h1, h2, h3 {
+      margin: 0 0 10px;
+    }
+    p {
+      margin: 6px 0;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    button {
+      width: 100%;
+      min-height: 48px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+    textarea {
+      width: 100%;
+      min-height: 140px;
+      resize: vertical;
+      box-sizing: border-box;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 12px;
+      font-size: 15px;
+      background: #fff;
+      color: var(--fg);
+    }
+    .mono {
+      white-space: pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 13px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      min-height: 100px;
+      overflow-wrap: anywhere;
+    }
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .ok { color: #067d17; }
+    .warn { color: #9a6700; }
+    .err { color: #b42318; }
+    @media (max-width: 560px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>PC Control Panel</h1>
+      <p class="muted">Telegram Web App MVP</p>
+      <div class="row">
+        <span id="authState" class="warn">인증 확인 중...</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>빠른 작업</h2>
+      <div class="grid">
+        <button id="btnStatus">상태 조회</button>
+        <button id="btnCapture">전체 캡처 요청</button>
+        <button id="btnSchedule">오늘 일정 조회</button>
+        <button id="btnPing">연결 테스트</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>메모 저장</h2>
+      <textarea id="memo" placeholder="저장할 메모를 입력하세요"></textarea>
+      <div class="row" style="margin-top:10px;">
+        <button id="btnSaveMemo">메모 저장</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>결과</h2>
+      <div id="result" class="mono">대기 중...</div>
+    </div>
+  </div>
+
+  <script>
+    const tg = window.Telegram?.WebApp;
+    const resultEl = document.getElementById('result');
+    const authStateEl = document.getElementById('authState');
+
+    const API_BASE = new URLSearchParams(window.location.search).get('apiBase') || '';
+
+    function setResult(value) {
+      if (typeof value === 'string') {
+        resultEl.textContent = value;
+      } else {
+        resultEl.textContent = JSON.stringify(value, null, 2);
+      }
+    }
+
+    function setLoading(button, loading) {
+      if (!button) return;
+      button.disabled = loading;
+    }
+
+    function getInitDataUnsafe() {
+      return tg?.initDataUnsafe || {};
+    }
+
+    async function callApi(path, options = {}) {
+      const headers = Object.assign({ 'Content-Type': 'application/json' }, options.headers || {});
+      const initData = tg?.initData || '';
+      headers['X-Telegram-Init-Data'] = initData;
+
+      const response = await fetch(API_BASE + path, {
+        ...options,
+        headers
+      });
+
+      const text = await response.text();
+      let body = text;
+      try { body = JSON.parse(text); } catch (_) {}
+
+      if (!response.ok) {
+        throw new Error(typeof body === 'string' ? body : JSON.stringify(body));
+      }
+      return body;
+    }
+
+    async function onStatus() {
+      const btn = document.getElementById('btnStatus');
+      setLoading(btn, true);
+      try {
+        const data = await callApi('/api/status');
+        setResult(data);
+      } catch (e) {
+        setResult('상태 조회 실패\n' + e.message);
+      } finally {
+        setLoading(btn, false);
+      }
+    }
+
+    async function onCapture() {
+      const btn = document.getElementById('btnCapture');
+      setLoading(btn, true);
+      try {
+        const data = await callApi('/api/capture', { method: 'POST' });
+        setResult(data);
+      } catch (e) {
+        setResult('캡처 요청 실패\n' + e.message);
+      } finally {
+        setLoading(btn, false);
+      }
+    }
+
+    async function onSchedule() {
+      const btn = document.getElementById('btnSchedule');
+      setLoading(btn, true);
+      try {
+        const data = await callApi('/api/schedule/today');
+        setResult(data);
+      } catch (e) {
+        setResult('일정 조회 실패\n' + e.message);
+      } finally {
+        setLoading(btn, false);
+      }
+    }
+
+    async function onSaveMemo() {
+      const btn = document.getElementById('btnSaveMemo');
+      setLoading(btn, true);
+      try {
+        const text = document.getElementById('memo').value.trim();
+        if (!text) throw new Error('메모가 비어 있습니다.');
+        const data = await callApi('/api/text', {
+          method: 'POST',
+          body: JSON.stringify({ text })
+        });
+        setResult(data);
+        if (tg) tg.showAlert('메모 저장 요청을 보냈습니다.');
+      } catch (e) {
+        setResult('메모 저장 실패\n' + e.message);
+      } finally {
+        setLoading(btn, false);
+      }
+    }
+
+    async function onPing() {
+      const btn = document.getElementById('btnPing');
+      setLoading(btn, true);
+      try {
+        const data = await callApi('/api/ping');
+        setResult(data);
+      } catch (e) {
+        setResult('연결 테스트 실패\n' + e.message);
+      } finally {
+        setLoading(btn, false);
+      }
+    }
+
+    function init() {
+      if (tg) {
+        tg.ready();
+        tg.expand();
+        const user = getInitDataUnsafe().user;
+        authStateEl.textContent = user
+          ? `Telegram user: ${user.id} / ${user.first_name || ''}`
+          : 'Telegram 사용자 정보 없음';
+        authStateEl.className = user ? 'ok' : 'warn';
+      } else {
+        authStateEl.textContent = 'Telegram WebApp 환경이 아닙니다. 브라우저 테스트 모드입니다.';
+        authStateEl.className = 'warn';
+      }
+
+      document.getElementById('btnStatus').addEventListener('click', onStatus);
+      document.getElementById('btnCapture').addEventListener('click', onCapture);
+      document.getElementById('btnSchedule').addEventListener('click', onSchedule);
+      document.getElementById('btnSaveMemo').addEventListener('click', onSaveMemo);
+      document.getElementById('btnPing').addEventListener('click', onPing);
+
+      setResult({
+        message: 'Web App ready',
+        apiBase: API_BASE || '(same origin)',
+        initDataUnsafe: getInitDataUnsafe()
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>
