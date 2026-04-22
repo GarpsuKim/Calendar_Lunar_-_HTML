@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MyAnalogCloCKAlarm Control Panel</title>
+  <style>
+    :root{
+      --bg:#f4f6fb;
+      --card:#ffffff;
+      --line:#dbe2f0;
+      --text:#1c2430;
+      --muted:#5b6472;
+      --accent:#2449d8;
+      --danger:#c43b3b;
+      --ok:#1f7a4d;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, "Malgun Gothic", sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+    .wrap{
+      max-width:900px;
+      margin:0 auto;
+      padding:18px;
+    }
+    .hero,.card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:16px;
+      box-shadow:0 2px 10px rgba(0,0,0,.05);
+      margin-bottom:16px;
+    }
+    .hero{padding:18px}
+    h1{
+      margin:0 0 8px 0;
+      font-size:24px;
+    }
+    .sub{
+      color:var(--muted);
+      line-height:1.5;
+      font-size:14px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:14px;
+    }
+    .card{padding:16px}
+    .card h2{
+      margin:0 0 8px 0;
+      font-size:18px;
+    }
+    .cmd{
+      display:block;
+      width:100%;
+      padding:12px 14px;
+      margin:8px 0 0 0;
+      border:0;
+      border-radius:12px;
+      background:var(--accent);
+      color:#fff;
+      font-size:15px;
+      cursor:pointer;
+      text-align:left;
+    }
+    .cmd.danger{background:var(--danger)}
+    .cmd.soft{background:#6d7a96}
+    .codebox{
+      margin-top:14px;
+      background:#10151e;
+      color:#eef3ff;
+      padding:14px;
+      border-radius:12px;
+      min-height:68px;
+      white-space:pre-wrap;
+      word-break:break-word;
+      font-family:Consolas, monospace;
+      font-size:15px;
+    }
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .smallbtn{
+      padding:10px 14px;
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:10px;
+      cursor:pointer;
+      font-size:14px;
+    }
+    .smallbtn.primary{
+      background:var(--accent);
+      border-color:var(--accent);
+      color:#fff;
+    }
+    .tips{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.6;
+    }
+    .status{
+      color:var(--ok);
+      font-weight:bold;
+    }
+    .warn{
+      color:var(--danger);
+      font-weight:bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>MyAnalogCloCKAlarm Control Panel</h1>
+      <div class="sub">
+        이 페이지는 <b>가짜 앱 UI</b>입니다. 버튼을 누르면 실제 명령어를 복사하거나 보여주고,
+        실행은 텔레그램 봇 채팅에서 합니다.
+      </div>
+      <div class="sub" style="margin-top:8px">
+        <span class="status">서버 없이 동작</span> · 정적 HTML · GitHub Pages용
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <h2>빠른 실행</h2>
+        <button class="cmd" onclick="setCommand('/s','전체 화면 캡처')">🖥 전체 화면 캡처</button>
+        <button class="cmd" onclick="setCommand('/c','시계 화면 캡처')">🕒 시계 캡처</button>
+        <button class="cmd" onclick="setCommand('/ms','구글 일정 조회')">📅 구글 일정</button>
+        <button class="cmd" onclick="setCommand('/ns','네이버 일정 조회')">🗓 네이버 일정</button>
+      </section>
+
+      <section class="card">
+        <h2>모니터 캡처</h2>
+        <button class="cmd soft" onclick="setCommand('/c1','모니터 1 캡처')">Monitor 1</button>
+        <button class="cmd soft" onclick="setCommand('/c2','모니터 2 캡처')">Monitor 2</button>
+        <button class="cmd soft" onclick="setCommand('/c3','모니터 3 캡처')">Monitor 3</button>
+        <button class="cmd soft" onclick="setCommand('/c4','모니터 4 캡처')">Monitor 4</button>
+      </section>
+
+      <section class="card">
+        <h2>시스템</h2>
+        <button class="cmd" onclick="setCommand('/wh','PC 정보 조회')">ℹ PC 정보</button>
+        <button class="cmd danger" onclick="setCommand('/d','PC 종료 요청')">⏻ 종료</button>
+        <button class="cmd danger" onclick="setCommand('/r','PC 재부팅 요청')">🔄 재부팅</button>
+        <button class="cmd soft" onclick="setCommand('/help','명령 도움말 보기')">❓ 도움말</button>
+      </section>
+
+      <section class="card">
+        <h2>직접 입력</h2>
+        <button class="cmd soft" onclick="setCommand('/text 메모 내용','텍스트 저장')">📝 텍스트 저장 예시</button>
+        <button class="cmd soft" onclick="setCommand('/cmd dir','CMD 실행 예시')">⌨ CMD 예시</button>
+        <button class="cmd soft" onclick="setCommand('/ps Get-Process','PowerShell 예시')">💻 PowerShell 예시</button>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>선택된 명령</h2>
+      <div id="desc" class="sub">버튼을 눌러 명령을 선택하세요.</div>
+      <div id="code" class="codebox">/help</div>
+      <div class="actions">
+        <button class="smallbtn primary" onclick="copyCommand()">명령 복사</button>
+        <button class="smallbtn" onclick="openBot()">봇 열기</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>사용 방법</h2>
+      <div class="tips">
+        1. 이 페이지에서 원하는 기능 버튼을 누릅니다.<br>
+        2. <b>명령 복사</b>를 누릅니다.<br>
+        3. 텔레그램 봇 채팅으로 가서 붙여넣고 전송합니다.<br><br>
+        <span class="warn">종료/재부팅 명령은 주의해서 사용하세요.</span>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const BOT_USERNAME = "MyAnalogClockAlarm_bot";
+    let currentCommand = "/help";
+
+    function setCommand(cmd, desc) {
+      currentCommand = cmd;
+      document.getElementById("code").textContent = cmd;
+      document.getElementById("desc").textContent = desc;
+    }
+
+    async function copyCommand() {
+      try {
+        await navigator.clipboard.writeText(currentCommand);
+        document.getElementById("desc").textContent = "복사 완료: " + currentCommand;
+      } catch (e) {
+        document.getElementById("desc").textContent = "복사 실패. 아래 명령을 직접 선택해서 복사하세요.";
+      }
+    }
+
+    function openBot() {
+      location.href = "https://t.me/" + BOT_USERNAME;
+    }
+
+    setCommand("/help", "명령 도움말 보기");
+  </script>
+</body>
+</html>
