@@ -4,42 +4,8 @@
 <base>
 
 <meta http-equiv="Content-Language" content="ko">
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=ks_c_5601-1987">
 <title>만능달력 - garpsu@naver.com</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<style>
-/* ── 모바일 반응형 ── */
-* { box-sizing: border-box; }
-html, body {
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100% !important;
-    overflow-x: hidden !important;
-}
-body > table,
-table {
-    max-width: 100% !important;
-    width: 100% !important;
-    table-layout: fixed !important;
-}
-/* 고정폭 컬럼 해제 */
-td { width: auto !important; word-break: break-word; }
-/* input 필드 모바일 최적화 */
-input[type=text] {
-    max-width: 95% !important;
-    font-size: 14px !important;
-}
-/* 달력 셀 최소화 */
-td[id^="td_"] {
-    padding: 2px !important;
-    font-size: 12px !important;
-}
-/* 스크롤 허용 (달력 테이블만) */
-.cal-wrap {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
-</style>
 </head>
 
 <script type="text/javascript">
@@ -48,7 +14,7 @@ var rege_0_1 = "";
 var rege_0_2 = "";
 </script>
 
-<body style="margin:0;padding:0;">
+<body>
 <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width=115 id="AutoNumber1" align="right">
   <tr>
     <td width="100%" align="center"><font face=Arial><b><span id=toDay_yearmonth>2007년 8월</span></b></font>　</td>
@@ -146,7 +112,7 @@ var memorialDays = Array (
 	new memorialDay("석가탄신일", 4, 8, 2, true),
 	new memorialDay("어린이날", 5, 5, 1, true),
 	new memorialDay("현충일", 6, 6, 1, true),
-	new memorialDay("제헌절", 7, 17, 1, true),
+//	new memorialDay("제헌절", 7, 17, 1, true),
 	new memorialDay("광복절", 8, 15, 1, true),
 	new memorialDay("", 8, 14, 2, true),
 	new memorialDay("추석", 8, 15, 2, true),
@@ -154,13 +120,6 @@ var memorialDays = Array (
 	new memorialDay("개천절", 10, 3, 1, true),
 	new memorialDay("한글날", 10, 9, 1, true),
 	new memorialDay("성탄절", 12, 25, 1, true),
-
-	new memorialDay("전두환 대통령 탄신", 1, 18, 1, false),
-	new memorialDay("국부 이승만 대통령 탄신", 3, 26, 1, false),
-	new memorialDay("국부 이승만 대통령 서거", 7, 19, 1, false),
-	new memorialDay("박정희 대통령 서거", 10, 26, 1, false),
-	new memorialDay("박정희 대통령 탄신", 11, 14, 1, false),
-	new memorialDay("전두환 대통령 서거", 11, 23, 1, false),
 
 	new memorialDay("정월대보름", 1, 15, 2, false),
 	new memorialDay("국군의날", 10, 1, 1, false),
@@ -231,7 +190,13 @@ var yearmemorialDays = Array (
 	new yearmemorialDay("임시공휴일", 2024, 10, 1, 1, true),
 	new yearmemorialDay("임시공휴일", 2025, 1, 27, 1, true),
 	new yearmemorialDay("대체휴일", 2025, 3, 3, 1, true),
+	new yearmemorialDay("대통령선거", 2025, 6, 3, 1, true),
 	new yearmemorialDay("대체휴일", 2025, 10, 8, 1, true),
+	new yearmemorialDay("대체휴일", 2026, 3, 2, 1, true),
+	new yearmemorialDay("대체휴일", 2026, 5, 25, 1, true),
+	new yearmemorialDay("지방선거", 2026, 6, 3, 1, true),
+	new yearmemorialDay("대체휴일", 2026, 8, 17, 1, true),
+	new yearmemorialDay("대체휴일", 2026, 10, 5, 1, true),
 
 	);
 
@@ -2172,7 +2137,7 @@ var lunarMonthTable = [
 [1, 5, 2, 1, 2, 1, 2, 2, 1, 2, 1, 2],
 [1, 2, 1, 1, 2, 1, 2, 2, 1, 2, 2, 1],
 [2, 1, 2, 1, 1, 5, 2, 1, 2, 2, 2, 1],
-[2, 1, 2, 1, 1, 2, 1, 1, 2, 2, 2, 1],
+[2, 1, 2, 1, 1, 2, 1, 2, 1, 2, 2, 1],   /* 2026 */
 [2, 2, 1, 2, 1, 1, 2, 1, 1, 2, 2, 1],
 [2, 2, 2, 1, 5, 1, 2, 1, 1, 2, 2, 1],
 [2, 2, 1, 2, 1, 2, 1, 2, 1, 1, 2, 2],
@@ -5323,60 +5288,60 @@ function noAlpha(e)
 		
 		</td>
 	</table> 
-<table cellpadding="0" cellspacing="0" width="100%" height="22">
+<table cellpadding="0" cellspacing="0" width="770" height="22">
 	<tr>
-		<td valign="top" width="100%">
+		<td valign="top" width="500">
 		<p align="left"><span class=title>기념일 계산 : </span>
 		    <input onkeypress='noAlpha(event);' type=text style='font-family:굴림;font-size:12px;color:black;width:35px;height:19px;border:1px solid #C3CACD;margin:5 2 0 0;padding:3 0 0 2;' maxLength=4 id=mStartYear name="T1" size="20">년
 		    <input onkeypress='noAlpha(event);' type=text style='font-family:굴림;font-size:12px;color:black;width:23px;height:19px;border:1px solid #C3CACD;margin:5 2 0 0;padding:3 0 0 2;' maxLength=2 id=mStartMonth name="T2" size="20">월
 		    <input onkeypress='noAlpha(event);' type=text style='font-family:굴림;font-size:12px;color:black;width:23px;height:19px;border:1px solid #C3CACD;margin:5 0 0 0;padding:3 0 0 2;' maxLength=2 id=mStartDay name="T3" size="20"> 
 			일로부터 오늘은 며칠째(양편)?
 </td>
-      		<td valign="top" width="100%">
+      		<td valign="top" width="100">
 		<p align="left">
 		    <input TYPE="button" VALUE="계산하기"
       onClick="javascript:dayCalcDisplay(1)"> </td>
-	<td height="22" valign="top" width="100%"> 
+	<td height="22" valign="top" width="130"> 
 	<input type=text style='font-family:굴림;font-size:12px;color:yellow;width:50px;height:19px;border:1px solid #660099;margin:5 2 0 0;padding:3 0 0 2;background-color:#660099;' id=day1 readonly name="T17" size="20">일</td>
 	</tr>
 </table>
-<table cellpadding="0" cellspacing="0" width="100%" height="22">
+<table cellpadding="0" cellspacing="0" width="770" height="22">
 	<tr>
-		<td valign="top" width="100%">
+		<td valign="top" width="500">
 		<p align="left"><span class=title>날짜 계산 : </span>
 		    <input onkeypress='noAlpha(event);' type=text style='font-family:굴림;font-size:12px;color:black;width:35px;height:19px;border:1px solid #C3CACD;margin:5 2 0 0;padding:3 0 0 2;' maxLength=4 id=mmStartYear name="T4" size="20">년
 		    <input onkeypress='noAlpha(event);' type=text style='font-family:굴림;font-size:12px;color:black;width:23px;height:19px;border:1px solid #C3CACD;margin:5 2 0 0;padding:3 0 0 2;' maxLength=2 id=mmStartMonth name="T5" size="20">월
 		    <input onkeypress='noAlpha(event);' type=text style='font-family:굴림;font-size:12px;color:black;width:23px;height:19px;border:1px solid #C3CACD;margin:5 2 0 0;padding:3 0 0 2;' maxLength=2 id=mmStartDay name="T6" size="20">일로부터
 		    <input onkeypress='noAlpha(event);' type=text style='width:45px;height:19px;border:1px solid #C3CACD;margin:5 2 0 0;padding:3 0 0 2;' maxLength=6 id=day2 name="T7" size="20">일째 되는 날짜는(양편)?
-      		</td><td valign="top" width="100%">
+      		</td><td valign="top" width="100">
 		<p align="left">
 		    <input TYPE="button" VALUE="계산하기"
       onClick="javascript:dayCalcDisplay(2)"> </td>
-	<td height="22" valign="top" width="100%"> 
+	<td height="22" valign="top" width="130"> 
 	<input type=text style='font-family:굴림;font-size:12px;color:yellow;width:108px;height:19px;border:1px solid #660099;margin:5 8 0 0;padding:3 0 0 2;background-color:#660099;' id=resultDay readonly name="T18" size="20">
 		    </td>
 	</tr>
 </table>
-<table cellpadding="0" cellspacing="0" width="100%" height="22">
+<table cellpadding="0" cellspacing="0" width="770" height="22">
 	<tr>
-		<td valign="top" width="100%">
+		<td valign="top" width="500">
 		<p align="left"><span class=title>D-Day 계산 : </span>오늘부터
 	<input onkeypress='noAlpha(event);' type=text style='font-family:굴림;font-size:12px;color:black;width:35px;height:19px;border:1px solid #C3CACD;margin:5 2 0 0;padding:3 0 0 2;' maxLength=4 id=targetYear name="T8" size="20">년
 		    <input onkeypress='noAlpha(event);' type=text style='font-family:굴림;font-size:12px;color:black;width:23px;height:19px;border:1px solid #C3CACD;margin:5 2 0 0;padding:3 0 0 2;' maxLength=2 id=targetMonth name="T9" size="20">월
 		    <input onkeypress='noAlpha(event);' type=text style='font-family:굴림;font-size:12px;color:black;width:23px;height:19px;border:1px solid #C3CACD;margin:5 2 0 0;padding:3 0 0 2;' maxLength=2 id=targetDay name="T10" size="20">일까지 남은 날짜는(한편)?<font face="돋움">
 </td>
-      		<td valign="top" width="100%">
+      		<td valign="top" width="100">
 		<p align="left">
 		    <input TYPE="button" VALUE="계산하기"
       onClick="javascript:dayCalcDisplay(3)"> </td>
-	<td height="22" valign="top" width="100%">
+	<td height="22" valign="top" width="130">
 		    <font face="돋움"> 
             <input type=text name=# style='font-family:굴림;font-size:12px;color:yellow;width:50px;height:19px;border:1px solid #660099;margin:5 2 0 0;padding:3 0 0 2;background-color:#660099;' id=day3 readonly size="20"></font>일</td>
 	</tr>
 </table>
-<table cellpadding="0" cellspacing="0" width="100%" height="22">
+<table cellpadding="0" cellspacing="0" width="770" height="22">
 	<tr>
-		<td valign="top" width="100%">
+		<td valign="top" width="500">
 		<p align="left"><span class=title>양음력변환 : </span>&nbsp;<input onkeypress='noAlpha(event);' type=text style='font-family:굴림;font-size:12px;color:black;width:35px;height:19px;border:1px solid #C3CACD;margin:5 2 0 0;padding:3 0 0 2;' maxLength=4 id=lsStartYear name="T11" size="20">년
 		    	<input onkeypress='noAlpha(event);' type=text style='font-family:굴림;font-size:12px;color:black;width:23px;height:19px;border:1px solid #C3CACD;margin:5 2 0 0;padding:3 0 0 2;' maxLength=2 id=lsStartMonth name="T12" size="20">월
 		    	<input onkeypress='noAlpha(event);' type=text style='font-family:굴림;font-size:12px;color:black;width:23px;height:19px;border:1px solid #C3CACD;margin:5 2 0 0;padding:3 0 0 2;' maxLength=2 id=lsStartDay name="T13" size="20">일을&nbsp;
@@ -5388,28 +5353,28 @@ function noAlpha(e)
 
 		    	(<input type=checkbox style='font-family:돋움;font-size:12px;color:black' id=leapMonth name="C1" value="ON">윤달)로
         <br>
-        <small><font color=#ff6600>양음력변환 사용 가능 범위: 102년 ~ 2540년</font></small></td><td valign="top" width="100%">
+        <small><font color=#ff6600>양음력변환 사용 가능 범위: 102년 ~ 2540년</font></small></td><td valign="top" width="100">
 		<p align="left">
 		    <input TYPE="button" VALUE="변환하기"
       onClick="javascript:dayCalcDisplay(5)"> </td>
-	<td height="22" valign="top" width="100%">
+	<td height="22" valign="top" width="130">
 	<input type=text style='font-family:굴림;font-size:12px;color:yellow;width:115px;height:19px;border:1px solid #660099;margin:5 8 0 0;padding:3 0 0 2;background-color:#660099;' id=solarLunarDay readonly name="T19" size="20">
 				</td>
 	</tr>
 </table>
-<table cellpadding="0" cellspacing="0" width="100%" height="22">
+<table cellpadding="0" cellspacing="0" width="770" height="22">
 	<tr>
-		<td valign="top" width="100%">
+		<td valign="top" width="500">
 		<p align="left"><span class=title>요일 계산 : </span>
 		    <input onkeypress='noAlpha(event);' type=text style='font-family:굴림;font-size:12px;color:black;width:35px;height:19px;border:1px solid #C3CACD;margin:5 2 0 0;padding:3 0 0 2;' maxLength=4 id=weekdayYear name="T14" size="20">년
 		    <input onkeypress='noAlpha(event);' type=text style='font-family:굴림;font-size:12px;color:black;width:23px;height:19px;border:1px solid #C3CACD;margin:5 2 0 0;padding:3 0 0 2;' maxLength=2 id=weekdayMonth name="T15" size="20">월
 		    <input onkeypress='noAlpha(event);' type=text style='font-family:굴림;font-size:12px;color:black;width:23px;height:19px;border:1px solid #C3CACD;margin:5 2 0 0;padding:3 0 0 2;' maxLength=2 id=weekdayDay name="T16" size="20">일의 
 	요일은?
-</td>  		<td valign="top" width="100%">
+</td>  		<td valign="top" width="100">
 		<p align="left">
 		    <input TYPE="button" VALUE="계산하기"
       onClick="javascript:dayCalcDisplay(4)"> </td>
-	<td height="22" valign="top" width="100%">
+	<td height="22" valign="top" width="130">
 			<input type=text style='font-family:굴림;font-size:12px;color:yellow;width:80px;height:19px;border:1px solid #660099;margin:5 8 0 0;padding:3 0 0 2;background-color:#660099;' id=weekday readonly name="T20" size="20">
 		</td>
 	</tr>
