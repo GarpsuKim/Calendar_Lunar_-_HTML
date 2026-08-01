@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>로또 · 연금복권 번호 생성기</title>
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --line: #e2e2e2;
+    --paper: #fafaf8;
+    --accent: #c0392b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Malgun Gothic", "맑은 고딕", system-ui, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.5;
+    display: flex;
+    justify-content: center;
+    padding: 32px 16px;
+  }
+  .sheet {
+    width: 100%;
+    max-width: 560px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 28px 24px 32px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+  }
+  header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+  }
+  h1 { font-size: 20px; letter-spacing: -.02em; }
+  header .sub { font-size: 12px; color: #888; }
+  .controls { display: flex; gap: 10px; margin-bottom: 22px; }
+  button {
+    font: inherit;
+    font-size: 14px;
+    padding: 10px 16px;
+    border: 1px solid var(--ink);
+    border-radius: 6px;
+    background: var(--ink);
+    color: #fff;
+    cursor: pointer;
+    transition: opacity .15s;
+  }
+  button.ghost { background: #fff; color: var(--ink); }
+  button:hover { opacity: .82; }
+  button:disabled { opacity: .35; cursor: default; }
+  .set {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+  .set .no {
+    font-size: 12px;
+    color: #999;
+    width: 42px;
+    flex-shrink: 0;
+  }
+  .balls { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .ball {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .plus { color: #bbb; font-weight: 700; margin: 0 2px; }
+  .ball.bonus { outline: 2px dotted #999; outline-offset: 1px; }
+  .pension {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 2px solid var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .pension .label { font-size: 13px; color: #666; }
+  .pension .num {
+    font-family: "Consolas", monospace;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    color: var(--accent);
+  }
+  .empty { color: #aaa; font-size: 14px; padding: 24px 0; text-align: center; }
+</style>
+</head>
+<body>
+  <div class="sheet">
+    <header>
+      <h1>로또 · 연금복권</h1>
+      <span class="sub">6/45 + 보너스 · 연금 6자리</span>
+    </header>
+
+    <div class="controls">
+      <button id="gen">번호 생성</button>
+      <button id="save" class="ghost" disabled>텍스트 파일 저장</button>
+    </div>
+
+    <div id="result">
+      <p class="empty">‘번호 생성’을 누르세요.</p>
+    </div>
+  </div>
+
+<script>
+  // 번호대별 색상 (동행복권 공 색)
+  function ballColor(n) {
+    if (n <= 10) return "#fbc400";
+    if (n <= 20) return "#69c8f2";
+    if (n <= 30) return "#ff7272";
+    if (n <= 40) return "#aaaaaa";
+    return "#b0d840";
+  }
+
+  const pad2 = (n) => String(n).padStart(2, " ");
+  let lastText = "";
+
+  function generate() {
+    const sets = [];
+    for (let s = 0; s < 5; s++) {
+      // 1~45 배열 생성 후 섞기 (Fisher-Yates)
+      const nums = Array.from({ length: 45 }, (_, i) => i + 1);
+      for (let i = nums.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [nums[i], nums[j]] = [nums[j], nums[i]];
+      }
+      const main = nums.slice(0, 6).sort((a, b) => a - b);
+      const bonus = nums[6];
+      sets.push({ main, bonus });
+    }
+    // 연금복권: 0~999999 (6자리)
+    const pension = String(Math.floor(Math.random() * 1000000)).padStart(6, "0");
+
+    render(sets, pension);
+    lastText = buildText(sets, pension);
+    document.getElementById("save").disabled = false;
+  }
+
+  function render(sets, pension) {
+    const box = document.getElementById("result");
+    box.innerHTML = "";
+
+    sets.forEach((set, i) => {
+      const row = document.createElement("div");
+      row.className = "set";
+
+      const no = document.createElement("span");
+      no.className = "no";
+      no.textContent = (i + 1) + "세트";
+      row.appendChild(no);
+
+      const balls = document.createElement("div");
+      balls.className = "balls";
+      set.main.forEach((n) => balls.appendChild(makeBall(n, false)));
+
+      const plus = document.createElement("span");
+      plus.className = "plus";
+      plus.textContent = "+";
+      balls.appendChild(plus);
+
+      balls.appendChild(makeBall(set.bonus, true));
+      row.appendChild(balls);
+      box.appendChild(row);
+    });
+
+    const p = document.createElement("div");
+    p.className = "pension";
+    p.innerHTML = '<span class="label">연금복권</span>'
+                + '<span class="num">' + pension + '</span>';
+    box.appendChild(p);
+  }
+
+  function makeBall(n, isBonus) {
+    const b = document.createElement("span");
+    b.className = "ball" + (isBonus ? " bonus" : "");
+    b.style.background = ballColor(n);
+    b.textContent = n;
+    return b;
+  }
+
+  // 저장용 텍스트 (Java/C++/Node 버전과 동일 형식)
+  function buildText(sets, pension) {
+    let out = "";
+    sets.forEach((set, i) => {
+      const sb = set.main.map((n) => pad2(n) + " ").join("");
+      out += (i + 1) + "세트: " + sb + "/ 보너스 " + pad2(set.bonus) + "\n";
+    });
+    out += "연금복권: " + pension + "\n";
+    return out;
+  }
+
+  function stamp(now) {
+    const p = (n, w = 2) => String(n).padStart(w, "0");
+    return {
+      file: `${now.getFullYear()}${p(now.getMonth()+1)}${p(now.getDate())}`
+          + `_${p(now.getHours())}${p(now.getMinutes())}${p(now.getSeconds())}`,
+      date: `${now.getFullYear()}-${p(now.getMonth()+1)}-${p(now.getDate())}`,
+      time: `${p(now.getHours())}:${p(now.getMinutes())}:${p(now.getSeconds())}`
+    };
+  }
+
+  function save() {
+    if (!lastText) return;
+    const now = new Date();
+    const s = stamp(now);
+    const fname = `Lotto_${s.file}.txt`;
+    // 헤더: (브라우저 제약으로 전체 경로 대신 파일명) | 날짜 | 시각
+    const header = `${fname} | ${s.date} | ${s.time}\n`;
+    const blob = new Blob([header + lastText], { type: "text/plain;charset=utf-8" });
+
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = fname;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  document.getElementById("gen").addEventListener("click", generate);
+  document.getElementById("save").addEventListener("click", save);
+</script>
+</body>
+</html>
