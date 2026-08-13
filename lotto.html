@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>로또 · 연금복권 번호 생성기 [金甲洙 , 2026.8]</title>
+<title>로또 · 연금복권 번호 생성기</title>
 <style>
   :root {
     --ink: #1a1a1a;
@@ -79,23 +79,42 @@
     font-weight: 600;
     color: #fff;
   }
-  .plus { color: #bbb; font-weight: 700; margin: 0 2px; }
-  .ball.bonus { outline: 2px dotted #999; outline-offset: 1px; }
-  .pension {
+  .pension-title {
     margin-top: 20px;
     padding-top: 16px;
     border-top: 2px solid var(--ink);
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 8px;
+  }
+  .pension-row {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 10px;
+    padding: 5px 0;
   }
-  .pension .label { font-size: 13px; color: #666; }
-  .pension .num {
+  .pension-row .no { font-size: 12px; color: #999; width: 42px; flex-shrink: 0; }
+  .pension-row .num {
     font-family: "Consolas", monospace;
-    font-size: 26px;
+    font-size: 22px;
     font-weight: 700;
     letter-spacing: .12em;
     color: var(--accent);
+  }
+  .site {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    font-size: 13px;
+    color: #666;
+  }
+  .site a { color: var(--accent); text-decoration: none; }
+  .site a:hover { text-decoration: underline; }
+  .datetime {
+    margin-top: 4px;
+    font-size: 13px;
+    color: #999;
+    font-family: "Consolas", monospace;
   }
   .empty { color: #aaa; font-size: 14px; padding: 24px 0; text-align: center; }
 </style>
@@ -104,7 +123,7 @@
   <div class="sheet">
     <header>
       <h1>로또 · 연금복권</h1>
-      <span class="sub">6/45 + 보너스 · 연금 6자리 [金甲洙 , 2026.8]</span>
+      <span class="sub">6/45 · 연금 6자리 ×5</span>
     </header>
 
     <div class="controls">
@@ -131,31 +150,33 @@
   let lastText = "";
 
   function generate() {
+    // 로또 5세트 (본번호 6개만, 보너스 없음)
     const sets = [];
     for (let s = 0; s < 5; s++) {
-      // 1~45 배열 생성 후 섞기 (Fisher-Yates)
       const nums = Array.from({ length: 45 }, (_, i) => i + 1);
       for (let i = nums.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [nums[i], nums[j]] = [nums[j], nums[i]];
       }
-      const main = nums.slice(0, 6).sort((a, b) => a - b);
-      const bonus = nums[6];
-      sets.push({ main, bonus });
+      sets.push(nums.slice(0, 6).sort((a, b) => a - b));
     }
-    // 연금복권: 0~999999 (6자리)
-    const pension = String(Math.floor(Math.random() * 1000000)).padStart(6, "0");
 
-    render(sets, pension);
-    lastText = buildText(sets, pension);
+    // 연금복권 5개 (각 0~999999, 6자리)
+    const pensions = [];
+    for (let i = 0; i < 5; i++) {
+      pensions.push(String(Math.floor(Math.random() * 1000000)).padStart(6, "0"));
+    }
+
+    render(sets, pensions);
+    lastText = buildText(sets, pensions);
     document.getElementById("save").disabled = false;
   }
 
-  function render(sets, pension) {
+  function render(sets, pensions) {
     const box = document.getElementById("result");
     box.innerHTML = "";
 
-    sets.forEach((set, i) => {
+    sets.forEach((main, i) => {
       const row = document.createElement("div");
       row.className = "set";
 
@@ -166,41 +187,58 @@
 
       const balls = document.createElement("div");
       balls.className = "balls";
-      set.main.forEach((n) => balls.appendChild(makeBall(n, false)));
-
-      const plus = document.createElement("span");
-      plus.className = "plus";
-      plus.textContent = "+";
-      balls.appendChild(plus);
-
-      balls.appendChild(makeBall(set.bonus, true));
+      main.forEach((n) => balls.appendChild(makeBall(n)));
       row.appendChild(balls);
       box.appendChild(row);
     });
 
-    const p = document.createElement("div");
-    p.className = "pension";
-    p.innerHTML = '<span class="label">연금복권</span>'
-                + '<span class="num">' + pension + '</span>';
-    box.appendChild(p);
+    const title = document.createElement("div");
+    title.className = "pension-title";
+    title.textContent = "연금복권";
+    box.appendChild(title);
+
+    pensions.forEach((num, i) => {
+      const row = document.createElement("div");
+      row.className = "pension-row";
+      row.innerHTML = '<span class="no">' + (i + 1) + '조</span>'
+                    + '<span class="num">' + num + '</span>';
+      box.appendChild(row);
+    });
+
+    // 맨 마지막 줄: 동행복권 링크
+    const link = document.createElement("div");
+    link.className = "site";
+    link.innerHTML = '동행복권 : '
+      + '<a href="https://www.dhlottery.co.kr" target="_blank" rel="noopener">'
+      + 'https://www.dhlottery.co.kr</a>';
+    box.appendChild(link);
+
+    // URL 다음 줄: 생성 시점 날짜 · 시각 (한 번만)
+    const s = stamp(new Date());
+    const dt = document.createElement("div");
+    dt.className = "datetime";
+    dt.textContent = s.date + " " + s.time;
+    box.appendChild(dt);
   }
 
-  function makeBall(n, isBonus) {
+  function makeBall(n) {
     const b = document.createElement("span");
-    b.className = "ball" + (isBonus ? " bonus" : "");
+    b.className = "ball";
     b.style.background = ballColor(n);
     b.textContent = n;
     return b;
   }
 
-  // 저장용 텍스트 (Java/C++/Node 버전과 동일 형식)
-  function buildText(sets, pension) {
+  // 저장용 텍스트
+  function buildText(sets, pensions) {
     let out = "";
-    sets.forEach((set, i) => {
-      const sb = set.main.map((n) => pad2(n) + " ").join("");
-      out += (i + 1) + "세트: " + sb + "/ 보너스 " + pad2(set.bonus) + "\n";
+    sets.forEach((main, i) => {
+      const sb = main.map((n) => pad2(n) + " ").join("");
+      out += (i + 1) + "세트: " + sb + "\n";
     });
-    out += "연금복권: " + pension + "\n";
+    pensions.forEach((num, i) => {
+      out += "연금복권" + (i + 1) + ": " + num + "\n";
+    });
     return out;
   }
 
@@ -219,7 +257,6 @@
     const now = new Date();
     const s = stamp(now);
     const fname = `Lotto_${s.file}.txt`;
-    // 헤더: (브라우저 제약으로 전체 경로 대신 파일명) | 날짜 | 시각
     const header = `${fname} | ${s.date} | ${s.time}\n`;
     const blob = new Blob([header + lastText], { type: "text/plain;charset=utf-8" });
 
